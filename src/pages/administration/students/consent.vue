@@ -124,7 +124,7 @@
 			<div id="consent-checkbox">
 				<base-input v-model="check" type="checkbox" name="switch" label="">
 				</base-input>
-				<label>
+				<label @click="check = !check">
 					<i18n
 						path="pages.administration.students.consent.steps.register.confirm"
 					>
@@ -181,6 +181,9 @@
 			<base-button design="secondary" @click="download">{{
 				$t("pages.administration.students.consent.steps.download.next")
 			}}</base-button>
+			<base-button design="text" @click="cancelWarning = true">{{
+				$t("common.actions.cancel")
+			}}</base-button>
 		</section>
 
 		<section v-if="currentStep === 3">
@@ -218,13 +221,29 @@
 						/>
 					</template>
 				</modal-body-info>
-				{{ $t("pages.administration.students.consent.cancel.modal.info") }}
+				<span v-if="currentStep === 2">
+					{{
+						$t(
+							"pages.administration.students.consent.cancel.modal.download.info"
+						)
+					}}
+				</span>
+				<span v-else>
+					{{ $t("pages.administration.students.consent.cancel.modal.info") }}
+				</span>
 			</template>
 			<template v-slot:footerRight>
 				<base-button design="danger text" @click="cancel">
 					{{ $t("pages.administration.students.consent.cancel.modal.confirm") }}
 				</base-button>
-				<base-button design="danger" @click="cancelWarning = false">
+				<base-button v-if="currentStep === 2" design="danger" @click="download">
+					{{
+						$t(
+							"pages.administration.students.consent.cancel.modal.download.continue"
+						)
+					}}
+				</base-button>
+				<base-button v-else design="danger" @click="cancelWarning = false">
 					{{
 						$t("pages.administration.students.consent.cancel.modal.continue")
 					}}
@@ -253,6 +272,7 @@
 </template>
 
 <script>
+// file deepcode ignore ArrayMethodOnNonArray
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 dayjs.extend(customParseFormat);
@@ -277,7 +297,7 @@ export default {
 		BaseInput,
 	},
 	meta: {
-		requiredPermissions: ["STUDENT_CREATE"],
+		requiredPermissions: ["STUDENT_CREATE", "STUDENT_LIST"],
 	},
 	layout: "loggedInFull",
 	props: {},
@@ -361,6 +381,8 @@ export default {
 			),
 			check: false,
 			checkWarning: false,
+			tableTimeOut: null,
+			printTimeOut: null,
 			printPageInfo: this.$t(
 				"pages.administration.students.consent.steps.register.print",
 				{ hostName: window.location.origin }
@@ -368,9 +390,6 @@ export default {
 			sortBy: "fullName",
 			sortOrder: "asc",
 		};
-	},
-	meta: {
-		requiredPermissions: ["STUDENT_LIST"],
 	},
 	computed: {
 		...mapGetters("bulkConsent", {
@@ -401,6 +420,12 @@ export default {
 	},
 	created(ctx) {
 		this.find();
+		window.addEventListener("beforeunload", this.warningEventHandler);
+	},
+	beforeDestroy() {
+		window.removeEventListener("beforeunload", this.warningEventHandler);
+		clearTimeout(this.tableTimeOut);
+		clearTimeout(this.printTimeOut);
 	},
 	mounted() {
 		this.checkTableData();
@@ -554,10 +579,11 @@ export default {
 
 			winPrint.document.close();
 			winPrint.focus();
-			setTimeout(() => {
+			this.printTimeOut = setTimeout(() => {
 				winPrint.print();
 				winPrint.close();
 			}, 500);
+			this.cancelWarning = false;
 			this.next();
 		},
 		success() {
@@ -574,7 +600,7 @@ export default {
 			});
 		},
 		checkTableData() {
-			setTimeout(() => {
+			this.tableTimeOut = setTimeout(() => {
 				if (this.filteredTableData.length === 0) {
 					this.$toast.error(
 						this.$t("pages.administration.students.consent.table.empty"),
@@ -587,6 +613,16 @@ export default {
 			}, 2000);
 		},
 		dayjs,
+		warningEventHandler() {
+			if (this.currentStep === 2) {
+				// Cancel the event as stated by the standard.
+				event.preventDefault();
+				// Chrome requires returnValue to be set.
+				event.returnValue = "";
+				// then show customized warning modal
+				this.cancelWarning = true;
+			}
+		},
 	},
 };
 </script>
