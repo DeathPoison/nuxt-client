@@ -66,7 +66,7 @@
 								}}
 								<base-link
 									class="link-style"
-									style="color: var(--color-white); text-decoration: underline;"
+									style="color: var(--color-white); text-decoration: underline"
 									to="/"
 									href="https://docs.hpi-schul-cloud.org/pages/viewpage.action?pageId=36700189"
 									target="_blank"
