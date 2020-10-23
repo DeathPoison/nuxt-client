@@ -9,6 +9,17 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ## Unreleased
 
 - SC-7447 Add warning text for links when leaving the schul-cloud platform
+
+### Added
+
+- SC-6293 - restricts Lern-Store access by permission
+
+### Fixed
+
+- SC-6293 - loads full permissions for user, e.g. school permission too, not just the ones on his role
+
+### Changed
+
 - SC-6060 Updated caniuse-lite
 
 ## 25.2.0
