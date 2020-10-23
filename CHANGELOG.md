@@ -8,6 +8,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+- SC-7447 Add warning text for links when leaving the schul-cloud platform
 - SC-6060 Updated caniuse-lite
 
 ## 25.2.0
