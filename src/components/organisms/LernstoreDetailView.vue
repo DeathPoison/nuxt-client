@@ -59,6 +59,7 @@
 					<base-button
 						v-if="isMerlinContent"
 						design="outline"
+						style="width: 100%;"
 						@click="
 							() => {
 								goToMerlinContent(merlinTokenReference);
@@ -72,11 +73,31 @@
 						v-else
 						design="outline"
 						:href="downloadUrl"
+						style="width: 100%;"
 						target="_blank"
 					>
 						<base-icon source="custom" icon="open_new_window" />
 						{{ $t("pages.content.material.toMaterial") }}
 					</base-button>
+					<!-- This will be replaced with Modal -->
+					<p
+						:style="{
+							marginTop: '1%',
+							color: 'var(--color-danger)',
+							fontWeight: 'var(--font-weight-bold)',
+						}"
+						class="text-s"
+					>
+						{{ $t("pages.content.material.leavePageWarningMain") }}
+					</p>
+					<p
+						:style="{
+							color: 'var(--color-danger)',
+						}"
+						class="text-xs"
+					>
+						{{ $t("pages.content.material.leavePageWarningFooter") }}
+					</p>
 				</div>
 				<!-- eslint-disable vue/no-v-html -->
 				<div class="description text-wrap" v-html="description"></div>
